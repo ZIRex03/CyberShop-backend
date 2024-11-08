@@ -7,11 +7,18 @@ const bodyparser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 
+// const con = sql.createConnection( {
+//     host: 'MySQL-8.2',
+//     user: 'root',
+//     password:'',
+//     database: 'test_bd',
+// });
+
 const con = sql.createConnection( {
-    host: 'MySQL-8.2',
+    host: 'mysql.railway.internal',
     user: 'root',
-    password:'',
-    database: 'test_bd',
+    password:'GzKKKlhIvFDvDDibmiAAXYNwNnRZERmn',
+    database: 'railway',
 });
 
 const app = express();
