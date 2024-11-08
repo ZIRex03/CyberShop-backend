@@ -315,6 +315,7 @@ const categories = () => {
 
 }
 
+
 categories();
 
 const productsBrand =() => {
@@ -329,7 +330,7 @@ const productsBrand =() => {
             for (let i = 1; i <= categories; i++){
         
                 app.get(`/categories/${i}/brands`, async(req, res) => {
-                    con.query(`SELECT DISTINCT (brand) FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
+                    con.query(`SELECT DISTINCT (brand) FROM Products WHERE category = ${i}`, (err, result) => {
                         res.send(result);
                     });
                 });
