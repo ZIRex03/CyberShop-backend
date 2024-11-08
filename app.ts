@@ -296,19 +296,19 @@ const categories = () => {
 
     con.query('SELECT COUNT(*) as count FROM Categories', (err, result) => {
 
-        if(result){
-            categories = result[0].count;
+        
+        categories = result[0].count;
 
-            for (let i = 1; i <= categories; i++){
+        for (let i = 1; i <= categories; i++){
         
-                app.get(`/categories/${i}/products`, async(req, res) => {
-                    con.query(`SELECT * FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
-                        res.send(result);
-                    });
-        
+            app.get(`/categories/${i}/products`, async(req, res) => {
+                con.query(`SELECT * FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
+                    res.send(result);
                 });
-            }
+        
+            });
         }
+       
         
     });
     
@@ -323,7 +323,6 @@ const productsBrand =() => {
 
     con.query('SELECT COUNT(*) as count FROM Categories', (err, result) => {
 
-        if(result){
 
             categories = result[0].count;
 
@@ -335,7 +334,6 @@ const productsBrand =() => {
                     });
                 });
             }
-        }
 
         
     });
@@ -349,7 +347,6 @@ const allProducts = () => {
 
     con.query('SELECT COUNT(*) as count FROM Products', (err, result) => {
 
-        if(result){
             productsCount = result[0].count;
 
             for(let i = 1; i <= productsCount; i++){
@@ -359,7 +356,6 @@ const allProducts = () => {
                     })
                 })
             }
-        }
         
     })
 }
