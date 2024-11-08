@@ -301,7 +301,7 @@ const categories = () => {
 
         for (let i = 1; i <= categories; i++){
         
-            app.get(`/categories/${i}/products`, async(req, res) => {
+            app.get(`/category/${i}/products`, async(req, res) => {
                 con.query(`SELECT * FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
                     res.send(result);
                 });
