@@ -1,9 +1,9 @@
 
 
 const express = require('express');
-const sql = require('mysql');
+const sql = require('mysql2');
 const cors = require('cors');
-const bodyparser = require('body-parser');
+const bodyParser = require('body-parser');
 const multer = require('multer');
 const path = require('path');
 
@@ -15,7 +15,8 @@ const path = require('path');
 // });
 
 const con = sql.createConnection( {
-    host: 'mysql.railway.internal',
+    host: 'autorack.proxy.rlwy.net',
+    port: 27638,
     user: 'root',
     password:'GzKKKlhIvFDvDDibmiAAXYNwNnRZERmn',
     database: 'railway',
@@ -24,15 +25,15 @@ const con = sql.createConnection( {
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(bodyparser());
+app.use(bodyParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 con.connect(err => {
-    if(err) console.log(err);
+    if(err) console.error('Ошибка подключения:', err);
     else console.log('Working')
 });
 
-const PORT = 5000;
+const PORT = 3306;
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -294,17 +295,21 @@ const categories = () => {
     var categories = 0;
 
     con.query('SELECT COUNT(*) as count FROM Categories', (err, result) => {
-        categories = result[0].count;
 
-        for (let i = 1; i <= categories; i++){
-    
-            app.get(`/categories/${i}/products`, async(req, res) => {
-                con.query(`SELECT * FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
-                    res.send(result);
+        if(result){
+            categories = result[0].count;
+
+            for (let i = 1; i <= categories; i++){
+        
+                app.get(`/categories/${i}/products`, async(req, res) => {
+                    con.query(`SELECT * FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
+                        res.send(result);
+                    });
+        
                 });
-    
-            });
+            }
         }
+        
     });
     
 
@@ -318,16 +323,21 @@ const productsBrand =() => {
 
     con.query('SELECT COUNT(*) as count FROM Categories', (err, result) => {
 
-        categories = result[0].count;
+        if(result){
 
-        for (let i = 1; i <= categories; i++){
-    
-            app.get(`/categories/${i}/brands`, async(req, res) => {
-                con.query(`SELECT DISTINCT (brand) FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
-                    res.send(result);
+            categories = result[0].count;
+
+            for (let i = 1; i <= categories; i++){
+        
+                app.get(`/categories/${i}/brands`, async(req, res) => {
+                    con.query(`SELECT DISTINCT (brand) FROM PRODUCTS WHERE category = ${i}`, (err, result) => {
+                        res.send(result);
+                    });
                 });
-            });
+            }
         }
+
+        
     });
 };
 
@@ -338,15 +348,19 @@ const allProducts = () => {
     var productsCount = 0;
 
     con.query('SELECT COUNT(*) as count FROM Products', (err, result) => {
-        productsCount = result[0].count;
 
-        for(let i = 1; i <= productsCount; i++){
-            app.get(`/products/${i}`, async(req, res) => {
-                con.query(`SELECT * FROM Products WHERE id = ${i}`, (err, result) =>{
-                    res.send(result);
+        if(result){
+            productsCount = result[0].count;
+
+            for(let i = 1; i <= productsCount; i++){
+                app.get(`/products/${i}`, async(req, res) => {
+                    con.query(`SELECT * FROM Products WHERE id = ${i}`, (err, result) =>{
+                        res.send(result);
+                    })
                 })
-            })
+            }
         }
+        
     })
 }
 
