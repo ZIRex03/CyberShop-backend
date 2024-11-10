@@ -327,23 +327,28 @@ app.get("/addreview", async (req, res) => {
   }
 });
 
-const categories = () => {
-  var categories = 0;
-
-  con.query("SELECT COUNT(*) as count FROM Categories", (err, result) => {
-    categories = result[0].count;
-
-    for (let i = 1; i <= categories; i++) {
-      app.get(`/category/${i}/products`, async (req, res) => {
-        con.query(
-          `SELECT * FROM Products WHERE category = ${i}`,
-          (err, result) => {
-            return res.send(result);
+const categories = async () => {
+    try {
+      
+      const [result] = await con.promise().query("SELECT COUNT(*) as count FROM Categories");
+      const categoriesCount = result[0].count;
+  
+      for (let i = 1; i <= categoriesCount; i++) {
+        app.get(`/category/${i}/products`, async (req, res) => {
+          try {
+            const [products] = await con.promise().query(`SELECT * FROM Products WHERE category = ?`, [i]);
+            return res.send(products);
+          } catch (err) {
+            console.error("Ошибка запроса продуктов:", err);
+            res.status(500).send("Ошибка сервера");
           }
-        );
-      });
+        });
+      }
+  
+      console.log(`Маршруты для категорий успешно созданы: 1-${categoriesCount}`);
+    } catch (err) {
+      console.error("Ошибка запроса количества категорий:", err);
     }
-  });
 };
 
 categories();
@@ -369,20 +374,28 @@ const productsBrand = () => {
 
 productsBrand();
 
-const allProducts = () => {
-  var productsCount = 0;
-
-  con.query("SELECT COUNT(*) as count FROM Products", (err, result) => {
-    productsCount = result[0].count;
-
-    for (let i = 1; i <= productsCount; i++) {
-      app.get(`/products/${i}`, async (req, res) => {
-        con.query(`SELECT * FROM Products WHERE id = ${i}`, (err, result) => {
-          return res.send(result);
+const allProducts = async () => {
+    try {
+      
+      const [result] = await con.promise().query("SELECT COUNT(*) as count FROM Products");
+      const productsCount = result[0].count;
+  
+      for (let i = 1; i <= productsCount; i++) {
+        app.get(`/products/${i}`, async (req, res) => {
+          try {
+            const [product] = await con.promise().query("SELECT * FROM Products WHERE id = ?", [i]);
+            return res.send(product);
+          } catch (err) {
+            console.error(`Ошибка запроса продукта с id ${i}:`, err);
+            res.status(500).send("Ошибка сервера");
+          }
         });
-      });
+      }
+  
+      console.log(`Маршруты для продуктов успешно созданы: 1-${productsCount}`);
+    } catch (err) {
+      console.error("Ошибка запроса количества продуктов:", err);
     }
-  });
 };
 
 allProducts();
